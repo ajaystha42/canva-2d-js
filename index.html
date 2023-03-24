@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- USE DEVELOPMENT VERSION -->
+    <script src="https://unpkg.com/konva@8.4.3/konva.min.js"></script>
+    <meta charset="utf-8" />
+    <title>Konva Transform Limits Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+      #container {
+        background-color: bisque;
+        position: relative; /* add this line */
+        margin-top: 200px;
+      }
+
+      #css-code {
+        position: absolute;
+        top: calc(100% + 10px); /* add this line */
+        top: 10px;
+        right: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #000;
+        height: 120px;
+      }
+      #drag-items input {
+        height: 100px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container"></div>
+    <div id="css-code"></div>
+    <div id="drag-items">
+      <input type="text" value="This is a text box" draggable="true" />
+    </div>
+    <script>
+      var width = window.innerWidth;
+      var height = 200;
+
+      // create stage
+      var stage = new Konva.Stage({
+        container: "container",
+        width: width,
+        height: height,
+      });
+
+      // create layer
+      var layer = new Konva.Layer();
+      stage.add(layer);
+      var con = document.getElementById("container");
+      var itemURL;
+
+      // bind events
+      con.addEventListener("dragover", function (e) {
+        e.preventDefault(); // required to allow drop
+      });
+
+      con.addEventListener("drop", function (e) {
+        e.preventDefault();
+        // now we need to find pointer position
+        // we can't use stage.getPointerPosition() here, because that event
+        // is not registered by Konva.Stage
+        // we can register it manually:
+        stage.setPointersPositions(e);
+
+        if (itemURL === "input") {
+          // create Konva shape to represent input field
+          var inputBox = new Konva.Rect({
+            x: stage.getPointerPosition().x,
+            y: stage.getPointerPosition().y,
+            width: 200,
+            height: 50,
+            fill: "#fff",
+            stroke: "black",
+            strokeWidth: 2,
+            draggable: true,
+          });
+
+          // add the shape to the layer
+          layer.add(inputBox);
+
+          // redraw the layer
+          layer.draw();
+
+          var MAX_WIDTH = 200;
+          // create new transformer
+          var tr = new Konva.Transformer({
+            boundBoxFunc: function (oldBoundBox, newBoundBox) {
+              // "boundBox" is an object with
+              // x, y, width, height and rotation properties
+              // transformer tool will try to fit nodes into that box
+
+              // the logic is simple, if new width is too big
+              // we will return previous state
+              if (Math.abs(newBoundBox.width) > MAX_WIDTH) {
+                return oldBoundBox;
+              }
+
+              return newBoundBox;
+            },
+          });
+          layer.add(tr);
+
+          // add click event listener to rectangle to show transformer tool
+          inputBox.on("click", function () {
+            tr.nodes([inputBox]);
+            layer.add(tr);
+            tr.show();
+          });
+
+          // add click event listener to stage to hide transformer tool
+          stage.on("click", function (e) {
+            // check if clicked on empty space
+            if (e.target === stage) {
+              tr.hide();
+              layer.draw();
+            }
+          });
+
+          var cssCodeEl = document.querySelector("#css-code");
+
+          tr.on("transform", function () {
+            var scaleX = inputBox.scaleX();
+            var scaleY = inputBox.scaleY();
+
+            var cssCode = `
+          .${inputBox.name()} {
+            width: ${inputBox.width() * scaleX}px;
+            height: ${inputBox.height() * scaleY}px;
+            margin-top: ${inputBox.y()}px;
+            margin-left: ${inputBox.x()}px;
+            margin-bottom: ${
+              stage.height() - inputBox.y() - inputBox.height()
+            }px;
+            margin-right: ${stage.width() - inputBox.x() - inputBox.width()}px;
+            padding-top: ${stage.height() - inputBox.y() - inputBox.height()}px;
+            padding-left: ${stage.width() - inputBox.x() - inputBox.width()}px;
+            padding-bottom: ${inputBox.y()}px;
+            padding-right: ${inputBox.x()}px;
+          }
+        `;
+
+            cssCodeEl.textContent = cssCode;
+          });
+
+          inputBox.on("dragmove", function () {
+            var cssCode = `
+    .${inputBox.name()} {
+      width: ${inputBox.width()}px\n;
+      height: ${inputBox.height()}px;
+      margin-top: ${inputBox.y()}px;
+      margin-left: ${inputBox.x()}px;
+      margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
+      margin-right: ${stage.width() - inputBox.x() - inputBox.width()}px;
+      padding-top: ${stage.height() - inputBox.y() - inputBox.height()}px;
+      padding-left: ${stage.width() - inputBox.x() - inputBox.width()}px;
+      padding-bottom: ${inputBox.y()}px;
+      padding-right: ${inputBox.x()}px;
+    }
+  `;
+            cssCodeEl.textContent = cssCode;
+          });
+        }
+      });
+
+      // bind input item drag event
+      document
+        .querySelector("#drag-items input")
+        .addEventListener("dragstart", function (e) {
+          itemURL = e.target.tagName.toLowerCase();
+        });
+    </script>
+  </body>
+</html>
