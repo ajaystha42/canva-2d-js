@@ -38,7 +38,11 @@
     <div id="container"></div>
     <div id="css-code"></div>
     <div id="drag-items">
+      <label draggable="true">Label here</label>
       <input type="text" value="This is a text box" draggable="true" />
+      <button type="button" draggable="true" onclick="submitText()">
+        Submit
+      </button>
     </div>
     <script>
       var width = window.innerWidth;
@@ -167,6 +171,23 @@
   `;
             cssCodeEl.textContent = cssCode;
           });
+          inputBox.on("click", function () {
+            var cssCode = `
+        .${inputBox.name()} {
+          width: ${inputBox.width()}px\n;
+          height: ${inputBox.height()}px;
+          margin-top: ${inputBox.y()}px;
+          margin-left: ${inputBox.x()}px;
+          margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
+          margin-right: ${stage.width() - inputBox.x() - inputBox.width()}px;
+          padding-top: ${stage.height() - inputBox.y() - inputBox.height()}px;
+          padding-left: ${stage.width() - inputBox.x() - inputBox.width()}px;
+          padding-bottom: ${inputBox.y()}px;
+          padding-right: ${inputBox.x()}px;
+        }
+      `;
+            cssCodeEl.textContent = cssCode;
+          });
         }
       });
 
@@ -176,6 +197,12 @@
         .addEventListener("dragstart", function (e) {
           itemURL = e.target.tagName.toLowerCase();
         });
+
+      function submitText() {
+        var textInput = document.getElementById("text-input");
+        var inputValue = textInput.value;
+        console.log(inputValue); // You can do something with the entered value here
+      }
     </script>
   </body>
 </html>
