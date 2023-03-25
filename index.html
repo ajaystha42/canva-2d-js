@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- USE DEVELOPMENT VERSION -->
     <script src="https://unpkg.com/konva@8.4.3/konva.min.js"></script>
     <meta charset="utf-8" />
     <title>Konva Transform Limits Demo</title>
@@ -38,13 +37,14 @@
     <div id="container"></div>
     <div id="css-code"></div>
     <div id="drag-items">
-      <label draggable="true">Label here</label>
+      <label draggable="true">Text</label>
       <input type="text" value="This is a text box" draggable="true" />
-      <button type="button" draggable="true" onclick="submitText()">
-        Submit
-      </button>
+      <button type="button" draggable="true">Button</button>
+      <!-- <button id="delete-button">Delete</button> -->
     </div>
     <script>
+      var totalRects = 0;
+
       var width = window.innerWidth;
       var height = 200;
 
@@ -57,7 +57,51 @@
 
       // create layer
       var layer = new Konva.Layer();
+      var complexText = new Konva.Text({
+        x: 20,
+        y: 60,
+        text: "Fusemachines\n\nNew York, USA",
+        fontSize: 18,
+        fontFamily: "Calibri",
+        fill: "#555",
+        width: 300,
+        padding: 20,
+        align: "center",
+      });
+
+      var rect1 = new Konva.Rect({
+        x: 20,
+        y: 60,
+        stroke: "#555",
+        strokeWidth: 5,
+        fill: "#ddd",
+        width: 300,
+        height: complexText.height(),
+        shadowColor: "black",
+        shadowBlur: 10,
+        shadowOffsetX: 10,
+        shadowOffsetY: 10,
+        shadowOpacity: 0.2,
+        cornerRadius: 10,
+      });
+      layer.add(rect1);
+      layer.add(complexText);
+
+      for (let index = 0; index < totalRects.length; index++) {
+        var simpleText = new Konva.Text({
+          x: stage.width() / 2,
+          y: 15,
+          text: "Simple Text",
+          fontSize: 30,
+          fontFamily: "Calibri",
+          fill: "green",
+          draggable: true,
+        });
+        layer.add(simpleText);
+      }
+
       stage.add(layer);
+
       var con = document.getElementById("container");
       var itemURL;
 
@@ -68,14 +112,45 @@
 
       con.addEventListener("drop", function (e) {
         e.preventDefault();
+        logNumRects();
         // now we need to find pointer position
         // we can't use stage.getPointerPosition() here, because that event
         // is not registered by Konva.Stage
         // we can register it manually:
         stage.setPointersPositions(e);
-
+        // var url = e.dataTransfer.getData("URL");
+        // console.log({ url });
+        // itemURL = url.includes("input") ? "input" : "button";
         if (itemURL === "input") {
           // create Konva shape to represent input field
+          // var complexText = new Konva.Text({
+          //   x: 20,
+          //   y: 60,
+          //   text: "Fusemachines\n\nNew York, USA",
+          //   fontSize: 18,
+          //   fontFamily: "Calibri",
+          //   fill: "#555",
+          //   width: 300,
+          //   padding: 20,
+          //   align: "center",
+          // });
+
+          // var inputBox = new Konva.Rect({
+          //   x: 20,
+          //   y: 60,
+          //   stroke: "#555",
+          //   strokeWidth: 5,
+          //   fill: "#ddd",
+          //   width: 300,
+          //   height: complexText.height(),
+          //   shadowColor: "black",
+          //   shadowBlur: 10,
+          //   shadowOffsetX: 10,
+          //   shadowOffsetY: 10,
+          //   shadowOpacity: 0.2,
+          //   cornerRadius: 10,
+          // });
+
           var inputBox = new Konva.Rect({
             x: stage.getPointerPosition().x,
             y: stage.getPointerPosition().y,
@@ -85,7 +160,9 @@
             stroke: "black",
             strokeWidth: 2,
             draggable: true,
+            text: "Text Box",
           });
+          console.log({ totalRects });
 
           // add the shape to the layer
           layer.add(inputBox);
@@ -93,7 +170,7 @@
           // redraw the layer
           layer.draw();
 
-          var MAX_WIDTH = 200;
+          var MAX_WIDTH = window.innerWidth;
           // create new transformer
           var tr = new Konva.Transformer({
             boundBoxFunc: function (oldBoundBox, newBoundBox) {
@@ -135,43 +212,32 @@
             var scaleY = inputBox.scaleY();
 
             var cssCode = `
-          .${inputBox.name()} {
-            width: ${inputBox.width() * scaleX}px;
-            height: ${inputBox.height() * scaleY}px;
-            margin-top: ${inputBox.y()}px;
-            margin-left: ${inputBox.x()}px;
-            margin-bottom: ${
-              stage.height() - inputBox.y() - inputBox.height()
-            }px;
-            margin-right: ${stage.width() - inputBox.x() - inputBox.width()}px;
-            padding-top: ${stage.height() - inputBox.y() - inputBox.height()}px;
-            padding-left: ${stage.width() - inputBox.x() - inputBox.width()}px;
-            padding-bottom: ${inputBox.y()}px;
-            padding-right: ${inputBox.x()}px;
-          }
-        `;
+              .${inputBox.name()} {
+                width: ${inputBox.width() * scaleX}px;
+                height: ${inputBox.height() * scaleY}px;
+                margin-top: ${inputBox.y()}px;
+                margin-left: ${inputBox.x()}px;
+                margin-bottom: ${
+                  stage.height() - inputBox.y() - inputBox.height()
+                }px;
+                margin-right: ${
+                  stage.width() - inputBox.x() - inputBox.width()
+                }px;
+                padding-top: ${
+                  stage.height() - inputBox.y() - inputBox.height()
+                }px;
+                padding-left: ${
+                  stage.width() - inputBox.x() - inputBox.width()
+                }px;
+                padding-bottom: ${inputBox.y()}px;
+                padding-right: ${inputBox.x()}px;
+              }
+            `;
 
             cssCodeEl.textContent = cssCode;
           });
 
           inputBox.on("dragmove", function () {
-            var cssCode = `
-    .${inputBox.name()} {
-      width: ${inputBox.width()}px\n;
-      height: ${inputBox.height()}px;
-      margin-top: ${inputBox.y()}px;
-      margin-left: ${inputBox.x()}px;
-      margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
-      margin-right: ${stage.width() - inputBox.x() - inputBox.width()}px;
-      padding-top: ${stage.height() - inputBox.y() - inputBox.height()}px;
-      padding-left: ${stage.width() - inputBox.x() - inputBox.width()}px;
-      padding-bottom: ${inputBox.y()}px;
-      padding-right: ${inputBox.x()}px;
-    }
-  `;
-            cssCodeEl.textContent = cssCode;
-          });
-          inputBox.on("click", function () {
             var cssCode = `
         .${inputBox.name()} {
           width: ${inputBox.width()}px\n;
@@ -188,6 +254,31 @@
       `;
             cssCodeEl.textContent = cssCode;
           });
+          inputBox.on("click", function () {
+            var cssCode = `
+            .${inputBox.name()} {
+              width: ${inputBox.width()}px\n;
+              height: ${inputBox.height()}px;
+              margin-top: ${inputBox.y()}px;
+              margin-left: ${inputBox.x()}px;
+              margin-bottom: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              margin-right: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-top: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              padding-left: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-bottom: ${inputBox.y()}px;
+              padding-right: ${inputBox.x()}px;
+            }
+          `;
+            cssCodeEl.textContent = cssCode;
+          });
         }
       });
 
@@ -198,11 +289,28 @@
           itemURL = e.target.tagName.toLowerCase();
         });
 
-      function submitText() {
-        var textInput = document.getElementById("text-input");
-        var inputValue = textInput.value;
-        console.log(inputValue); // You can do something with the entered value here
+      function logNumRects() {
+        var rects = stage.find("Rect");
+        console.log({ rects: rects.length });
+        if (rects.length > 1) {
+          ab = "" + rects.length;
+          console.log({ ab: ab.split("") });
+          totalRects = 0;
+          ab.split("").forEach((x) => {
+            totalRects += +x;
+            // console.log({ x });
+          });
+        }
+
+        // console.log("Total number of Rect objects in stage: " + rects.length);
       }
+
+      // Call the function to log the initial number of rects in the stage
+      logNumRects();
+      // Listen for events when rects are added or removed from the stage
+      stage.on("drag", function () {
+        logNumRects();
+      });
     </script>
   </body>
 </html>
