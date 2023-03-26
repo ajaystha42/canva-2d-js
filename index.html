@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://unpkg.com/konva@8.4.3/konva.min.js"></script>
-    <meta charset="utf-8" />
-    <title>Konva Transform Limits Demo</title>
+    <title>Konva Drag and Drop Text Example</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/konva@8.3.1/konva.min.js"></script>
     <style>
       body {
         margin: 0;
@@ -13,40 +14,62 @@
       }
       #container {
         background-color: bisque;
-        position: relative; /* add this line */
-        margin-top: 200px;
+        position: relative;
       }
 
       #css-code {
         position: absolute;
-        top: calc(100% + 10px); /* add this line */
-        top: 10px;
+        bottom: 10px;
         right: 10px;
         padding: 10px;
         background-color: #fff;
         border: 1px solid #000;
-        height: 120px;
+        height: 360px;
+        display: none;
       }
-      #drag-items input {
-        height: 100px;
+      #drag-items {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        height: 40px;
+        text-align: center;
+      }
+      #drag-items label {
+        margin-top: 10px;
       }
     </style>
   </head>
-
   <body>
     <div id="container"></div>
-    <div id="css-code"></div>
     <div id="drag-items">
-      <label draggable="true">Text</label>
-      <input type="text" value="This is a text box" draggable="true" />
-      <button type="button" draggable="true">Button</button>
-      <!-- <button id="delete-button">Delete</button> -->
+      <label draggable="true" id="myText">Text</label>
+      <input
+        type="text"
+        id="myInput"
+        value="This is a text box"
+        draggable="true"
+      />
+      <button type="button" id="myButton" draggable="true">Button</button>
     </div>
+    <div id="css-code"></div>
     <script>
-      var totalRects = 0;
-
       var width = window.innerWidth;
-      var height = 200;
+      var height = 400;
+      var input = document.getElementById("myInput");
+      var button = document.getElementById("myButton");
+      var text = document.getElementById("myText");
+
+      input.addEventListener("dragstart", function (event) {
+        event.dataTransfer.setData("text/plain", "input");
+      });
+
+      button.addEventListener("dragstart", function (event) {
+        event.dataTransfer.setData("text/plain", "button");
+      });
+
+      text.addEventListener("dragstart", function (event) {
+        event.dataTransfer.setData("text/plain", "text");
+      });
 
       // create stage
       var stage = new Konva.Stage({
@@ -54,9 +77,8 @@
         width: width,
         height: height,
       });
-
-      // create layer
       var layer = new Konva.Layer();
+
       var complexText = new Konva.Text({
         x: 20,
         y: 60,
@@ -86,72 +108,24 @@
       });
       layer.add(rect1);
       layer.add(complexText);
-
-      for (let index = 0; index < totalRects.length; index++) {
-        var simpleText = new Konva.Text({
-          x: stage.width() / 2,
-          y: 15,
-          text: "Simple Text",
-          fontSize: 30,
-          fontFamily: "Calibri",
-          fill: "green",
-          draggable: true,
-        });
-        layer.add(simpleText);
-      }
-
       stage.add(layer);
 
       var con = document.getElementById("container");
-      var itemURL;
 
-      // bind events
       con.addEventListener("dragover", function (e) {
-        e.preventDefault(); // required to allow drop
+        e.preventDefault();
       });
 
       con.addEventListener("drop", function (e) {
         e.preventDefault();
-        logNumRects();
-        // now we need to find pointer position
-        // we can't use stage.getPointerPosition() here, because that event
-        // is not registered by Konva.Stage
-        // we can register it manually:
         stage.setPointersPositions(e);
-        // var url = e.dataTransfer.getData("URL");
-        // console.log({ url });
-        // itemURL = url.includes("input") ? "input" : "button";
-        if (itemURL === "input") {
-          // create Konva shape to represent input field
-          // var complexText = new Konva.Text({
-          //   x: 20,
-          //   y: 60,
-          //   text: "Fusemachines\n\nNew York, USA",
-          //   fontSize: 18,
-          //   fontFamily: "Calibri",
-          //   fill: "#555",
-          //   width: 300,
-          //   padding: 20,
-          //   align: "center",
-          // });
-
-          // var inputBox = new Konva.Rect({
-          //   x: 20,
-          //   y: 60,
-          //   stroke: "#555",
-          //   strokeWidth: 5,
-          //   fill: "#ddd",
-          //   width: 300,
-          //   height: complexText.height(),
-          //   shadowColor: "black",
-          //   shadowBlur: 10,
-          //   shadowOffsetX: 10,
-          //   shadowOffsetY: 10,
-          //   shadowOpacity: 0.2,
-          //   cornerRadius: 10,
-          // });
-
-          var inputBox = new Konva.Rect({
+        var type = e.dataTransfer.getData("text/plain");
+        var textNode = "";
+        var inputBox = "";
+        var cssCodeEl = document.querySelector("#css-code");
+        var cssCode = "";
+        if (type == "input") {
+          inputBox = new Konva.Rect({
             x: stage.getPointerPosition().x,
             y: stage.getPointerPosition().y,
             width: 200,
@@ -160,26 +134,10 @@
             stroke: "black",
             strokeWidth: 2,
             draggable: true,
-            text: "Text Box",
           });
-          console.log({ totalRects });
-
-          // add the shape to the layer
           layer.add(inputBox);
-
-          // redraw the layer
-          layer.draw();
-
-          var MAX_WIDTH = window.innerWidth;
-          // create new transformer
-          var tr = new Konva.Transformer({
+          var inputTr = new Konva.Transformer({
             boundBoxFunc: function (oldBoundBox, newBoundBox) {
-              // "boundBox" is an object with
-              // x, y, width, height and rotation properties
-              // transformer tool will try to fit nodes into that box
-
-              // the logic is simple, if new width is too big
-              // we will return previous state
               if (Math.abs(newBoundBox.width) > MAX_WIDTH) {
                 return oldBoundBox;
               }
@@ -187,75 +145,109 @@
               return newBoundBox;
             },
           });
-          layer.add(tr);
-
-          // add click event listener to rectangle to show transformer tool
-          inputBox.on("click", function () {
-            tr.nodes([inputBox]);
-            layer.add(tr);
-            tr.show();
-          });
-
-          // add click event listener to stage to hide transformer tool
+          layer.add(inputTr);
           stage.on("click", function (e) {
-            // check if clicked on empty space
             if (e.target === stage) {
-              tr.hide();
+              inputTr.hide();
               layer.draw();
+              cssCodeEl.style.display = "none";
+              cssCode = "";
+              cssCodeEl.textContent = cssCode;
+              //   inputTr.nodes = [];
+            }
+          });
+          inputBox.on("click", function () {
+            inputTr.nodes([inputBox]);
+            layer.add(inputTr);
+            inputTr.show();
+          });
+          document.addEventListener("keydown", function (event) {
+            if (
+              event.keyCode === 46 ||
+              event.key === "Delete" ||
+              event.key === "Backspace"
+            ) {
+              var selectedNode = inputTr.nodes()[0];
+              if (selectedNode) {
+                inputBox.hide();
+                inputTr.hide();
+                cssCodeEl.style.display = "none";
+                cssCode = "";
+                cssCodeEl.textContent = cssCode;
+              }
             }
           });
 
-          var cssCodeEl = document.querySelector("#css-code");
-
-          tr.on("transform", function () {
+          inputTr.on("transform", function () {
             var scaleX = inputBox.scaleX();
             var scaleY = inputBox.scaleY();
 
-            var cssCode = `
-              .${inputBox.name()} {
-                width: ${inputBox.width() * scaleX}px;
-                height: ${inputBox.height() * scaleY}px;
-                margin-top: ${inputBox.y()}px;
-                margin-left: ${inputBox.x()}px;
-                margin-bottom: ${
-                  stage.height() - inputBox.y() - inputBox.height()
-                }px;
-                margin-right: ${
-                  stage.width() - inputBox.x() - inputBox.width()
-                }px;
-                padding-top: ${
-                  stage.height() - inputBox.y() - inputBox.height()
-                }px;
-                padding-left: ${
-                  stage.width() - inputBox.x() - inputBox.width()
-                }px;
-                padding-bottom: ${inputBox.y()}px;
-                padding-right: ${inputBox.x()}px;
-              }
+            cssCode = `
+            .${inputBox.name()} {
+              width: ${inputBox.width() * scaleX}px;
+              height: ${inputBox.height() * scaleY}px;
+              margin-top: ${inputBox.y()}px;
+              margin-left: ${inputBox.x()}px;
+              margin-bottom: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              margin-right: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-top: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              padding-left: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-bottom: ${inputBox.y()}px;
+              padding-right: ${inputBox.x()}px;
+              border-width: ${inputBox.strokeWidth()}px;
+              border-style: ${inputBox.stroke()}px;
+              border-color: ${inputBox.stroke()}px;
+              background-color: ${inputBox.fill()};
+            }
             `;
 
+            cssCodeEl.style.display = "block";
             cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
           });
 
           inputBox.on("dragmove", function () {
-            var cssCode = `
-        .${inputBox.name()} {
-          width: ${inputBox.width()}px\n;
-          height: ${inputBox.height()}px;
-          margin-top: ${inputBox.y()}px;
-          margin-left: ${inputBox.x()}px;
-          margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
-          margin-right: ${stage.width() - inputBox.x() - inputBox.width()}px;
-          padding-top: ${stage.height() - inputBox.y() - inputBox.height()}px;
-          padding-left: ${stage.width() - inputBox.x() - inputBox.width()}px;
-          padding-bottom: ${inputBox.y()}px;
-          padding-right: ${inputBox.x()}px;
-        }
-      `;
+            cssCode = `
+            .${inputBox.name()} {
+              width: ${inputBox.width()}px;
+              height: ${inputBox.height()}px;
+              margin-top: ${inputBox.y()}px;
+              margin-left: ${inputBox.x()}px;
+              margin-bottom: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              margin-right: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-top: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              padding-left: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-bottom: ${inputBox.y()}px;
+              padding-right: ${inputBox.x()}px;
+              border-width: ${inputBox.strokeWidth()}px;
+              border-style: ${inputBox.stroke()}px;
+              border-color: ${inputBox.stroke()}px;
+              background-color: ${inputBox.fill()};
+            }
+            `;
+            cssCodeEl.style.display = "block";
+
             cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
           });
           inputBox.on("click", function () {
-            var cssCode = `
+            cssCode = `
             .${inputBox.name()} {
               width: ${inputBox.width()}px\n;
               height: ${inputBox.height()}px;
@@ -275,41 +267,393 @@
               }px;
               padding-bottom: ${inputBox.y()}px;
               padding-right: ${inputBox.x()}px;
+              border-width: ${inputBox.strokeWidth()}px;
+              border-style: ${inputBox.stroke()}px;
+              border-color: ${inputBox.stroke()}px;
+              background-color: ${inputBox.fill()};
             }
-          `;
+            `;
+            cssCodeEl.style.display = "block";
+
             cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
+          });
+        } else if (type == "button") {
+          inputBox = new Konva.Rect({
+            x: stage.getPointerPosition().x,
+            y: stage.getPointerPosition().y,
+            width: 150,
+            height: 30,
+            fill: "#90EE90",
+            stroke: "blue",
+            strokeWidth: 2,
+            draggable: true,
+          });
+          layer.add(inputBox);
+          var inputTr = new Konva.Transformer({
+            boundBoxFunc: function (oldBoundBox, newBoundBox) {
+              if (Math.abs(newBoundBox.width) > MAX_WIDTH) {
+                return oldBoundBox;
+              }
+
+              return newBoundBox;
+            },
+          });
+          layer.add(inputTr);
+          stage.on("click", function (e) {
+            if (e.target === stage) {
+              inputTr.hide();
+              layer.draw();
+              cssCodeEl.style.display = "none";
+              cssCode = "";
+              cssCodeEl.textContent = cssCode;
+            }
+          });
+          inputBox.on("click", function () {
+            inputTr.nodes([inputBox]);
+            layer.add(inputTr);
+            inputTr.show();
+          });
+
+          inputTr.on("transform", function () {
+            var scaleX = inputBox.scaleX();
+            var scaleY = inputBox.scaleY();
+
+            cssCode = `
+            .${inputBox.name()} {
+              width: ${inputBox.width() * scaleX}px;
+              height: ${inputBox.height() * scaleY}px;
+              margin-top: ${inputBox.y()}px;
+              margin-left: ${inputBox.x()}px;
+              margin-bottom: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              margin-right: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-top: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              padding-left: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-bottom: ${inputBox.y()}px;
+              padding-right: ${inputBox.x()}px;
+              border-width: ${inputBox.strokeWidth()}px;
+              border-style: ${inputBox.stroke()}px;
+              border-color: ${inputBox.stroke()}px;
+              background-color: ${inputBox.fill()};
+            }
+            `;
+
+            cssCodeEl.style.display = "block";
+            cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
+          });
+
+          inputBox.on("dragmove", function () {
+            cssCode = `
+            .${inputBox.name()} {
+              width: ${inputBox.width()}px;
+              height: ${inputBox.height()}px;
+              margin-top: ${inputBox.y()}px;
+              margin-left: ${inputBox.x()}px;
+              margin-bottom: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              margin-right: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-top: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              padding-left: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-bottom: ${inputBox.y()}px;
+              padding-right: ${inputBox.x()}px;
+              border-width: ${inputBox.strokeWidth()}px;
+              border-style: ${inputBox.stroke()}px;
+              border-color: ${inputBox.stroke()}px;
+              background-color: ${inputBox.fill()};
+            }
+            `;
+            cssCodeEl.style.display = "block";
+
+            cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
+          });
+          inputBox.on("click", function () {
+            cssCode = `
+            .${inputBox.name()} {
+              width: ${inputBox.width()}px\n;
+              height: ${inputBox.height()}px;
+              margin-top: ${inputBox.y()}px;
+              margin-left: ${inputBox.x()}px;
+              margin-bottom: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              margin-right: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-top: ${
+                stage.height() - inputBox.y() - inputBox.height()
+              }px;
+              padding-left: ${
+                stage.width() - inputBox.x() - inputBox.width()
+              }px;
+              padding-bottom: ${inputBox.y()}px;
+              padding-right: ${inputBox.x()}px;
+              border-width: ${inputBox.strokeWidth()}px;
+              border-style: ${inputBox.stroke()}px;
+              border-color: ${inputBox.stroke()}px;
+              background-color: ${inputBox.fill()};
+            }
+            `;
+            cssCodeEl.style.display = "block";
+
+            cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
+          });
+        } else {
+          textNode = new Konva.Text({
+            x: stage.getPointerPosition().x + 20,
+            y: stage.getPointerPosition().y + 20,
+            text: "text",
+            fontSize: 18,
+            fill: "black",
+            draggable: true,
+          });
+          layer.add(textNode);
+          textNode.moveToTop();
+
+          var textNodeTr = new Konva.Transformer({
+            node: textNode,
+            enabledAnchors: ["middle-left", "middle-right"],
+            // set minimum width of text
+            boundBoxFunc: function (oldBox, newBox) {
+              newBox.width = Math.max(30, newBox.width);
+              return newBox;
+            },
+          });
+          stage.on("click", function (e) {
+            // check if clicked on empty space
+            if (e.target === stage) {
+              textNodeTr.hide();
+              layer.draw();
+            }
+          });
+
+          textNodeTr.on("transform", function () {
+            // textNode.setAttrs({
+            //   width: textNode.width() * textNode.scaleX(),
+            //   scaleX: 1,
+            // });
+
+            var scaleX = textNode.scaleX();
+            var scaleY = textNode.scaleY();
+
+            cssCode = `
+            .${textNode.name()} {
+              width: ${textNode.width() * scaleX}px;
+              height: ${textNode.height() * scaleY}px;
+              margin-top: ${textNode.y()}px;
+              margin-left: ${textNode.x()}px;
+              margin-bottom: ${
+                stage.height() - textNode.y() - textNode.height()
+              }px;
+              margin-right: ${
+                stage.width() - textNode.x() - textNode.width()
+              }px;
+              padding-top: ${
+                stage.height() - textNode.y() - textNode.height()
+              }px;
+              padding-left: ${
+                stage.width() - textNode.x() - textNode.width()
+              }px;
+              padding-bottom: ${textNode.y()}px;
+              padding-right: ${textNode.x()}px;
+              border-width: ${textNode.strokeWidth()}px;
+              border-style: ${textNode.stroke()}px;
+              border-color: ${textNode.stroke()}px;
+              background-color: ${textNode.fill()};
+            }
+            `;
+
+            cssCodeEl.style.display = "block";
+            cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
+          });
+
+          textNode.on("click", function () {
+            cssCode = `
+            .${textNode.name()} {
+              width: ${textNode.width()}px;
+              height: ${textNode.height()}px;
+              margin-top: ${textNode.y()}px;
+              margin-left: ${textNode.x()}px;
+              margin-bottom: ${
+                stage.height() - textNode.y() - textNode.height()
+              }px;
+              margin-right: ${
+                stage.width() - textNode.x() - textNode.width()
+              }px;
+              padding-top: ${
+                stage.height() - textNode.y() - textNode.height()
+              }px;
+              padding-left: ${
+                stage.width() - textNode.x() - textNode.width()
+              }px;
+              padding-bottom: ${textNode.y()}px;
+              padding-right: ${textNode.x()}px;
+              border-width: ${textNode.strokeWidth()}px;
+              border-style: ${textNode.stroke()}px;
+              border-color: ${textNode.stroke()}px;
+              background-color: ${textNode.fill()};
+            }
+            `;
+
+            cssCodeEl.style.display = "block";
+            cssCodeEl.textContent = cssCode;
+            cssCodeEl.style.whiteSpace = "pre-line";
+          });
+          layer.add(textNodeTr);
+          textNode.on("dblclick dbltap", () => {
+            // hide text node and transformer:
+            textNode.hide();
+            textNodeTr.hide();
+
+            // create textarea over canvas with absolute position
+            // first we need to find position for textarea
+            // how to find it?
+
+            // at first lets find position of text node relative to the stage:
+            var textPosition = textNode.absolutePosition();
+
+            // so position of textarea will be the sum of positions above:
+            var areaPosition = {
+              x: stage.container().offsetLeft + textPosition.x,
+              y: stage.container().offsetTop + textPosition.y,
+            };
+
+            // create textarea and style it
+            var textarea = document.createElement("textarea");
+            document.body.appendChild(textarea);
+
+            // apply many styles to match text on canvas as close as possible
+            // remember that text rendering on canvas and on the textarea can be different
+            // and sometimes it is hard to make it 100% the same. But we will try...
+            textarea.value = textNode.text();
+            textarea.style.position = "absolute";
+            textarea.style.top = areaPosition.y + "px";
+            textarea.style.left = areaPosition.x + "px";
+            textarea.style.width =
+              textNode.width() - textNode.padding() * 2 + "px";
+            textarea.style.height =
+              textNode.height() - textNode.padding() * 2 + 5 + "px";
+            textarea.style.fontSize = textNode.fontSize() + "px";
+            textarea.style.border = "none";
+            textarea.style.padding = "0px";
+            textarea.style.margin = "0px";
+            textarea.style.overflow = "hidden";
+            textarea.style.background = "none";
+            textarea.style.outline = "none";
+            textarea.style.resize = "none";
+            textarea.style.lineHeight = textNode.lineHeight();
+            textarea.style.fontFamily = textNode.fontFamily();
+            textarea.style.transformOrigin = "left top";
+            textarea.style.textAlign = textNode.align();
+            textarea.style.color = textNode.fill();
+            rotation = textNode.rotation();
+            var transform = "";
+            if (rotation) {
+              transform += "rotateZ(" + rotation + "deg)";
+            }
+
+            var px = 0;
+            // also we need to slightly move textarea on firefox
+            // because it jumps a bit
+            var isFirefox =
+              navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+            if (isFirefox) {
+              px += 2 + Math.round(textNode.fontSize() / 20);
+            }
+            transform += "translateY(-" + px + "px)";
+
+            textarea.style.transform = transform;
+
+            // reset height
+            textarea.style.height = "auto";
+            // after browsers resized it we can set actual value
+            textarea.style.height = textarea.scrollHeight + 3 + "px";
+
+            textarea.focus();
+
+            function removeTextarea() {
+              textarea.parentNode.removeChild(textarea);
+              window.removeEventListener("click", handleOutsideClick);
+              textNode.show();
+              textNodeTr.show();
+              textNodeTr.forceUpdate();
+            }
+
+            function setTextareaWidth(newWidth) {
+              if (!newWidth) {
+                // set width for placeholder
+                newWidth = textNode.placeholder.length * textNode.fontSize();
+              }
+              // some extra fixes on different browsers
+              var isSafari = /^((?!chrome|android).)*safari/i.test(
+                navigator.userAgent
+              );
+              var isFirefox =
+                navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+              if (isSafari || isFirefox) {
+                newWidth = Math.ceil(newWidth);
+              }
+
+              var isEdge =
+                document.documentMode || /Edge/.test(navigator.userAgent);
+              if (isEdge) {
+                newWidth += 1;
+              }
+              textarea.style.width = newWidth + "px";
+            }
+
+            textarea.addEventListener("keydown", function (e) {
+              // hide on enter
+              // but don't hide on shift + enter
+              if (e.keyCode === 13 && !e.shiftKey) {
+                textNode.text(textarea.value);
+                removeTextarea();
+              }
+              // on esc do not set value back to node
+              if (e.keyCode === 27) {
+                removeTextarea();
+              }
+            });
+
+            textarea.addEventListener("keydown", function (e) {
+              scale = textNode.getAbsoluteScale().x;
+              setTextareaWidth(textNode.width() * scale);
+              textarea.style.height = "auto";
+              textarea.style.height =
+                textarea.scrollHeight + textNode.fontSize() + "px";
+            });
+
+            function handleOutsideClick(e) {
+              if (e.target !== textarea) {
+                textNode.text(textarea.value);
+                removeTextarea();
+              }
+            }
+            setTimeout(() => {
+              window.addEventListener("click", handleOutsideClick);
+            });
           });
         }
-      });
-
-      // bind input item drag event
-      document
-        .querySelector("#drag-items input")
-        .addEventListener("dragstart", function (e) {
-          itemURL = e.target.tagName.toLowerCase();
-        });
-
-      function logNumRects() {
-        var rects = stage.find("Rect");
-        console.log({ rects: rects.length });
-        if (rects.length > 1) {
-          ab = "" + rects.length;
-          console.log({ ab: ab.split("") });
-          totalRects = 0;
-          ab.split("").forEach((x) => {
-            totalRects += +x;
-            // console.log({ x });
-          });
-        }
-
-        // console.log("Total number of Rect objects in stage: " + rects.length);
-      }
-
-      // Call the function to log the initial number of rects in the stage
-      logNumRects();
-      // Listen for events when rects are added or removed from the stage
-      stage.on("drag", function () {
-        logNumRects();
+        layer.draw();
+        var MAX_WIDTH = window.innerWidth;
       });
     </script>
   </body>
