@@ -3,6 +3,7 @@ var height = 400;
 var input = document.getElementById("myInput");
 var button = document.getElementById("myButton");
 var text = document.getElementById("myText");
+var MAX_WIDTH = window.innerWidth;
 
 input.addEventListener("dragstart", function (event) {
   event.dataTransfer.setData("text/plain", "input");
@@ -98,7 +99,6 @@ con.addEventListener("drop", function (e) {
         cssCodeEl.style.display = "none";
         cssCode = "";
         cssCodeEl.textContent = cssCode;
-        //   inputTr.nodes = [];
       }
     });
     inputBox.on("click", function () {
@@ -140,8 +140,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${inputBox.y()}px;
         padding-right: ${inputBox.x()}px;
         border-width: ${inputBox.strokeWidth()}px;
-        border-style: ${inputBox.stroke()}px;
-        border-color: ${inputBox.stroke()}px;
+        border-color: ${inputBox.stroke()};
         background-color: ${inputBox.fill()};
       }
       `;
@@ -152,10 +151,12 @@ con.addEventListener("drop", function (e) {
     });
 
     inputBox.on("dragmove", function () {
+      var scaleX = inputBox.scaleX();
+      var scaleY = inputBox.scaleY();
       cssCode = `
       .${inputBox.name()} {
-        width: ${inputBox.width()}px;
-        height: ${inputBox.height()}px;
+        width: ${inputBox.width() * scaleX}px;
+        height: ${inputBox.height() * scaleY}px;
         margin-top: ${inputBox.y()}px;
         margin-left: ${inputBox.x()}px;
         margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
@@ -165,8 +166,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${inputBox.y()}px;
         padding-right: ${inputBox.x()}px;
         border-width: ${inputBox.strokeWidth()}px;
-        border-style: ${inputBox.stroke()}px;
-        border-color: ${inputBox.stroke()}px;
+        border-color: ${inputBox.stroke()};
         background-color: ${inputBox.fill()};
       }
       `;
@@ -176,10 +176,12 @@ con.addEventListener("drop", function (e) {
       cssCodeEl.style.whiteSpace = "pre-line";
     });
     inputBox.on("click", function () {
+      var scaleX = inputBox.scaleX();
+      var scaleY = inputBox.scaleY();
       cssCode = `
       .${inputBox.name()} {
-        width: ${inputBox.width()}px\n;
-        height: ${inputBox.height()}px;
+        width: ${inputBox.width() * scaleX}px;
+        height: ${inputBox.height() * scaleY}px;
         margin-top: ${inputBox.y()}px;
         margin-left: ${inputBox.x()}px;
         margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
@@ -189,8 +191,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${inputBox.y()}px;
         padding-right: ${inputBox.x()}px;
         border-width: ${inputBox.strokeWidth()}px;
-        border-style: ${inputBox.stroke()}px;
-        border-color: ${inputBox.stroke()}px;
+        border-color: ${inputBox.stroke()};
         background-color: ${inputBox.fill()};
       }
       `;
@@ -235,6 +236,22 @@ con.addEventListener("drop", function (e) {
       layer.add(inputTr);
       inputTr.show();
     });
+    document.addEventListener("keydown", function (event) {
+      if (
+        event.keyCode === 46 ||
+        event.key === "Delete" ||
+        event.key === "Backspace"
+      ) {
+        var selectedNode = inputTr.nodes()[0];
+        if (selectedNode) {
+          inputBox.hide();
+          inputTr.hide();
+          cssCodeEl.style.display = "none";
+          cssCode = "";
+          cssCodeEl.textContent = cssCode;
+        }
+      }
+    });
 
     inputTr.on("transform", function () {
       var scaleX = inputBox.scaleX();
@@ -253,8 +270,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${inputBox.y()}px;
         padding-right: ${inputBox.x()}px;
         border-width: ${inputBox.strokeWidth()}px;
-        border-style: ${inputBox.stroke()}px;
-        border-color: ${inputBox.stroke()}px;
+        border-color: ${inputBox.stroke()};
         background-color: ${inputBox.fill()};
       }
       `;
@@ -265,10 +281,12 @@ con.addEventListener("drop", function (e) {
     });
 
     inputBox.on("dragmove", function () {
+      var scaleX = inputBox.scaleX();
+      var scaleY = inputBox.scaleY();
       cssCode = `
       .${inputBox.name()} {
-        width: ${inputBox.width()}px;
-        height: ${inputBox.height()}px;
+        width: ${inputBox.width() * scaleX}px;
+        height: ${inputBox.height() * scaleY}px;
         margin-top: ${inputBox.y()}px;
         margin-left: ${inputBox.x()}px;
         margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
@@ -278,8 +296,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${inputBox.y()}px;
         padding-right: ${inputBox.x()}px;
         border-width: ${inputBox.strokeWidth()}px;
-        border-style: ${inputBox.stroke()}px;
-        border-color: ${inputBox.stroke()}px;
+        border-color: ${inputBox.stroke()};
         background-color: ${inputBox.fill()};
       }
       `;
@@ -289,10 +306,12 @@ con.addEventListener("drop", function (e) {
       cssCodeEl.style.whiteSpace = "pre-line";
     });
     inputBox.on("click", function () {
+      var scaleX = inputBox.scaleX();
+      var scaleY = inputBox.scaleY();
       cssCode = `
       .${inputBox.name()} {
-        width: ${inputBox.width()}px\n;
-        height: ${inputBox.height()}px;
+        width: ${inputBox.width() * scaleX}px;
+        height: ${inputBox.height() * scaleY}px;
         margin-top: ${inputBox.y()}px;
         margin-left: ${inputBox.x()}px;
         margin-bottom: ${stage.height() - inputBox.y() - inputBox.height()}px;
@@ -302,8 +321,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${inputBox.y()}px;
         padding-right: ${inputBox.x()}px;
         border-width: ${inputBox.strokeWidth()}px;
-        border-style: ${inputBox.stroke()}px;
-        border-color: ${inputBox.stroke()}px;
+        border-color: ${inputBox.stroke()};
         background-color: ${inputBox.fill()};
       }
       `;
@@ -314,8 +332,8 @@ con.addEventListener("drop", function (e) {
     });
   } else {
     textNode = new Konva.Text({
-      x: stage.getPointerPosition().x + 20,
-      y: stage.getPointerPosition().y + 20,
+      x: stage.getPointerPosition().x,
+      y: stage.getPointerPosition().y,
       text: "text",
       fontSize: 18,
       fill: "black",
@@ -363,8 +381,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${textNode.y()}px;
         padding-right: ${textNode.x()}px;
         border-width: ${textNode.strokeWidth()}px;
-        border-style: ${textNode.stroke()}px;
-        border-color: ${textNode.stroke()}px;
+        border-color: ${textNode.stroke()};
         background-color: ${textNode.fill()};
       }
       `;
@@ -388,8 +405,7 @@ con.addEventListener("drop", function (e) {
         padding-bottom: ${textNode.y()}px;
         padding-right: ${textNode.x()}px;
         border-width: ${textNode.strokeWidth()}px;
-        border-style: ${textNode.stroke()}px;
-        border-color: ${textNode.stroke()}px;
+        border-color: ${textNode.stroke()};
         background-color: ${textNode.fill()};
       }
       `;
@@ -499,14 +515,16 @@ con.addEventListener("drop", function (e) {
       }
 
       textarea.addEventListener("keydown", function (e) {
-        // hide on enter
-        // but don't hide on shift + enter
-        if (e.keyCode === 13 && !e.shiftKey) {
+        if (
+          (e.keyCode === 13 && !e.shiftKey) ||
+          e.key === "Delete" ||
+          e.key === "Backspace"
+        ) {
           textNode.text(textarea.value);
           removeTextarea();
         }
         // on esc do not set value back to node
-        if (e.keyCode === 27) {
+        if (e.keyCode === 27 || e.key === "Delete" || e.key === "Backspace") {
           removeTextarea();
         }
       });
@@ -531,5 +549,4 @@ con.addEventListener("drop", function (e) {
     });
   }
   layer.draw();
-  var MAX_WIDTH = window.innerWidth;
 });
