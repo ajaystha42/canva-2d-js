@@ -8,18 +8,6 @@ body {
   background-color: bisque;
   position: relative;
 }
-#rect-width{
-  display: none;
-}
-#rect-height{
-  display: none;
-}
-#text-width{
-  display: none;
-}
-#text-height{
-  display: none;
-}
 
 #css-code {
   position: absolute;
