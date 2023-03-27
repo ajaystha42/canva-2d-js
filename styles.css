@@ -4,6 +4,7 @@ body {
   overflow: hidden;
   background-color: #f0f0f0;
 }
+
 #container {
   background-color: bisque;
   position: relative;
@@ -19,6 +20,7 @@ body {
   height: 360px;
   display: none;
 }
+
 #drag-items {
   display: flex;
   justify-content: center;
@@ -28,6 +30,11 @@ body {
   margin-top: 8px;
   cursor: pointer;
 }
+
 #drag-items label {
   margin-top: 10px;
+}
+
+button{
+  cursor: pointer;
 }
