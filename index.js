@@ -140,14 +140,16 @@ con.addEventListener("drop", function (e) {
     inputGroup.add(textNodeTr);
 
     const { attrs } = textNode;
+    const inputGroupAttr = inputGroup.attrs;
+
     const inputEl = document.createElement("input");
     inputEl.placeholder = attrs.text;
     inputEl.style.fontSize = attrs.fontSize;
     // inputEl.style.width = "200px";
     // inputEl.style.height = "50px";
-    inputEl.style.left = attrs.x + "px";
+    inputEl.style.left = inputGroupAttr.x + "px";
     inputEl.style.position = "absolute";
-    inputEl.style.top = attrs.y + "px";
+    inputEl.style.top = inputGroupAttr.y + "px";
     inputEl.style.display = "block";
     // inputEl.style.marginBottom = "10px"
     // inputEl.style.color =
@@ -217,8 +219,8 @@ con.addEventListener("drop", function (e) {
         inputBox.height() - textNode.y() - textNode.height() + "px";
       inputEl.style.paddingRight =
         inputBox.width() - textNode.x() - textNode.width() + "px";
-      inputEl.style.width = inputBox.width() + "px";
-      inputEl.style.height = inputBox.height() + "px";
+      inputEl.style.width = inputBox.width() * scaleX + "px";
+      inputEl.style.height = inputBox.height() * scaleY + "px";
       inputEl.style.backgroundColor = inputBox.fill();
       inputEl.placeholder = attrs.text;
       inputEl.style.fontSize = attrs.fontSize;
@@ -271,8 +273,8 @@ con.addEventListener("drop", function (e) {
         inputBox.height() - textNode.y() - textNode.height() + "px";
       inputEl.style.paddingRight =
         inputBox.width() - textNode.x() - textNode.width() + "px";
-      inputEl.style.width = inputBox.width() + "px";
-      inputEl.style.height = inputBox.height() + "px";
+      inputEl.style.width = inputBox.width() * scaleX + "px";
+      inputEl.style.height = inputBox.height() * scaleY + "px";
       inputEl.style.backgroundColor = inputBox.fill();
       inputEl.placeholder = attrs.text;
       inputEl.style.fontSize = attrs.fontSize;
@@ -324,8 +326,8 @@ con.addEventListener("drop", function (e) {
         inputBox.height() - textNode.y() - textNode.height() + "px";
       inputEl.style.paddingRight =
         inputBox.width() - textNode.x() - textNode.width() + "px";
-      inputEl.style.width = inputBox.width() + "px";
-      inputEl.style.height = inputBox.height() + "px";
+      inputEl.style.width = inputBox.width() * scaleX + "px";
+      inputEl.style.height = inputBox.height() * scaleY + "px";
       inputEl.style.backgroundColor = inputBox.fill();
       inputEl.placeholder = attrs.text;
       inputEl.style.fontSize = attrs.fontSize;
@@ -640,6 +642,7 @@ con.addEventListener("drop", function (e) {
       fontSize: 12,
       fill: "grey",
       draggable: true,
+      // textAlign: "center",
     });
     inputGroup.add(textNode);
 
@@ -653,7 +656,11 @@ con.addEventListener("drop", function (e) {
       },
     });
     inputGroup.add(textNodeTr);
+    var scaleX = inputBox.scaleX();
+    var scaleY = inputBox.scaleY();
+
     const { attrs } = textNode;
+    const inputGroupAttr = inputGroup.attrs;
     const buttonEl = document.createElement("button");
     buttonEl.placeholder = attrs.text;
     buttonEl.style.fontSize = attrs.fontSize;
@@ -661,8 +668,8 @@ con.addEventListener("drop", function (e) {
 
     // buttonEl.style.width = "200px";
     // buttonEl.style.height = "50px";
-    buttonEl.style.left = attrs.x + "px";
-    buttonEl.style.top = attrs.y + "px";
+    buttonEl.style.left = inputGroupAttr.x + "px";
+    buttonEl.style.top = inputGroupAttr.y + "px";
     buttonEl.style.display = "block";
     buttonEl.style.marginBottom = "10px";
 
@@ -679,8 +686,8 @@ con.addEventListener("drop", function (e) {
       inputBox.height() - textNode.y() - textNode.height() + "px";
     buttonEl.style.paddingRight =
       inputBox.width() - textNode.x() - textNode.width() + "px";
-    buttonEl.style.width = inputBox.width() + "px";
-    buttonEl.style.height = inputBox.height() + "px";
+    buttonEl.style.width = inputBox.width() * scaleX + "px";
+    buttonEl.style.height = inputBox.height() * scaleY + "px";
     buttonEl.style.backgroundColor = inputBox.fill();
     buttonEl.textContent = attrs.text;
     buttonEl.style.fontSize = attrs.fontSize;
@@ -714,7 +721,6 @@ con.addEventListener("drop", function (e) {
       cssCodeEl.style.whiteSpace = "pre-line";
 
       // dynamic html render
-
       buttonEl.placeholder = attrs.text;
       buttonEl.style.fontSize = attrs.fontSize;
       buttonEl.style.left = inputGroup.x() + "px";
@@ -728,15 +734,17 @@ con.addEventListener("drop", function (e) {
       buttonEl.style.paddingLeft = textNode.x() * scaleX + "px";
       buttonEl.style.paddingBottom =
         (inputBox.height() - textNode.y() - textNode.height()) * scaleY + "px";
-      buttonEl.style.paddingRight =
-        (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
-      buttonEl.style.width = inputBox.width() + "px";
-      buttonEl.style.height = inputBox.height() + "px";
+      // buttonEl.style.paddingRight =
+      //   (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
+      buttonEl.style.paddingRight = "unset";
+      buttonEl.style.width = inputBox.width() * scaleX + "px";
+      buttonEl.style.height = inputBox.height() * scaleY + "px";
       buttonEl.style.backgroundColor = inputBox.fill();
       buttonEl.innerText = attrs.text;
       buttonEl.style.fontSize = attrs.fontSize;
       buttonEl.style.border = "2px solid black";
       buttonEl.style.display = "block";
+      buttonEl.style.textAlign = "left";
     });
     inputTr.on("transform", function () {
       var scaleX = inputBox.scaleX();
@@ -779,15 +787,24 @@ con.addEventListener("drop", function (e) {
       buttonEl.style.paddingLeft = textNode.x() * scaleX + "px";
       buttonEl.style.paddingBottom =
         (inputBox.height() - textNode.y() - textNode.height()) * scaleY + "px";
-      buttonEl.style.paddingRight =
-        (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
-      buttonEl.style.width = inputBox.width() + "px";
-      buttonEl.style.height = inputBox.height() + "px";
+      // buttonEl.style.paddingRight =
+      //   (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
+      // buttonEl.style.paddingTop = "0px";
+      // buttonEl.style.paddingLeft = "0px";
+      // buttonEl.style.paddingBottom = "0px";
+      buttonEl.style.paddingRight = "unset";
+      // textNode.setAttrs({
+      //   x: (inputBox.width() * scaleX) / 2,
+      //   y: (inputBox.height() * scaleY) / 2,
+      // });
+      buttonEl.style.width = inputBox.width() * scaleX + "px";
+      buttonEl.style.height = inputBox.height() * scaleY + "px";
       buttonEl.style.backgroundColor = inputBox.fill();
       buttonEl.placeholder = attrs.text;
       buttonEl.style.fontSize = attrs.fontSize;
       buttonEl.style.border = "2px solid black";
       buttonEl.style.display = "block";
+      buttonEl.style.textAlign = "left";
     });
 
     inputGroup.on("dragmove", function () {
@@ -831,10 +848,13 @@ con.addEventListener("drop", function (e) {
       buttonEl.style.paddingLeft = textNode.x() * scaleX + "px";
       buttonEl.style.paddingBottom =
         (inputBox.height() - textNode.y() - textNode.height()) * scaleY + "px";
-      buttonEl.style.paddingRight =
-        (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
-      buttonEl.style.width = inputBox.width() + "px";
-      buttonEl.style.height = inputBox.height() + "px";
+      // buttonEl.style.paddingRight =
+      //   (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
+      buttonEl.style.paddingRight = "unset";
+      buttonEl.style.textAlign = "left";
+
+      buttonEl.style.width = inputBox.width() * scaleX + "px";
+      buttonEl.style.height = inputBox.height() * scaleY + "px";
       buttonEl.style.backgroundColor = inputBox.fill();
       buttonEl.placeholder = attrs.text;
       buttonEl.style.fontSize = attrs.fontSize;
@@ -878,6 +898,32 @@ con.addEventListener("drop", function (e) {
 
       cssCodeEl.textContent = cssCode;
       cssCodeEl.style.whiteSpace = "pre-line";
+      // dynamic html render
+
+      buttonEl.placeholder = attrs.text;
+      buttonEl.style.fontSize = attrs.fontSize;
+      buttonEl.style.left = inputGroup.x() + "px";
+      buttonEl.style.position = "absolute";
+      buttonEl.style.top = inputGroup.y() + "px";
+      // buttonEl.style.marginTop = inputGroup.y() * scaleY + "px";
+      // buttonEl.style.marginLeft = inputGroup.x() * scaleX + "px";
+      // buttonEl.style.marginRight =
+      //   stage.width() - inputGroup.x() - inputBox.width() + "px";
+      buttonEl.style.paddingTop = textNode.y() * scaleY + "px";
+      buttonEl.style.paddingLeft = textNode.x() * scaleX + "px";
+      buttonEl.style.paddingBottom =
+        (inputBox.height() - textNode.y() - textNode.height()) * scaleY + "px";
+      // buttonEl.style.paddingRight =
+      //   (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
+      buttonEl.style.paddingRight = "unset";
+      buttonEl.style.width = inputBox.width() * scaleX + "px";
+      buttonEl.style.height = inputBox.height() * scaleY + "px";
+      buttonEl.style.backgroundColor = inputBox.fill();
+      buttonEl.innerText = attrs.text;
+      buttonEl.style.fontSize = attrs.fontSize;
+      buttonEl.style.border = "2px solid black";
+      buttonEl.style.display = "block";
+      buttonEl.style.textAlign = "left";
     });
 
     textNode.on("click", function () {
@@ -898,6 +944,32 @@ con.addEventListener("drop", function (e) {
 
       cssCodeEl.textContent = cssCode;
       cssCodeEl.style.whiteSpace = "pre-line";
+      // dynamic html render
+
+      buttonEl.placeholder = attrs.text;
+      buttonEl.style.fontSize = attrs.fontSize;
+      buttonEl.style.left = inputGroup.x() + "px";
+      buttonEl.style.position = "absolute";
+      buttonEl.style.top = inputGroup.y() + "px";
+      // buttonEl.style.marginTop = inputGroup.y() * scaleY + "px";
+      // buttonEl.style.marginLeft = inputGroup.x() * scaleX + "px";
+      // buttonEl.style.marginRight =
+      //   stage.width() - inputGroup.x() - inputBox.width() + "px";
+      buttonEl.style.paddingTop = textNode.y() * scaleY + "px";
+      buttonEl.style.paddingLeft = textNode.x() * scaleX + "px";
+      buttonEl.style.paddingBottom =
+        (inputBox.height() - textNode.y() - textNode.height()) * scaleY + "px";
+      // buttonEl.style.paddingRight =
+      //   (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
+      buttonEl.style.paddingRight = "unset";
+      buttonEl.style.width = inputBox.width() * scaleX + "px";
+      buttonEl.style.height = inputBox.height() * scaleY + "px";
+      buttonEl.style.backgroundColor = inputBox.fill();
+      buttonEl.innerText = attrs.text;
+      buttonEl.style.fontSize = attrs.fontSize;
+      buttonEl.style.border = "2px solid black";
+      buttonEl.style.display = "block";
+      buttonEl.style.textAlign = "left";
     });
 
     textNode.on("dragmove", function () {
@@ -918,6 +990,32 @@ con.addEventListener("drop", function (e) {
 
       cssCodeEl.textContent = cssCode;
       cssCodeEl.style.whiteSpace = "pre-line";
+      // dynamic html render
+
+      buttonEl.placeholder = attrs.text;
+      buttonEl.style.fontSize = attrs.fontSize;
+      buttonEl.style.left = inputGroup.x() + "px";
+      buttonEl.style.position = "absolute";
+      buttonEl.style.top = inputGroup.y() + "px";
+      // buttonEl.style.marginTop = inputGroup.y() * scaleY + "px";
+      // buttonEl.style.marginLeft = inputGroup.x() * scaleX + "px";
+      // buttonEl.style.marginRight =
+      //   stage.width() - inputGroup.x() - inputBox.width() + "px";
+      buttonEl.style.paddingTop = textNode.y() * scaleY + "px";
+      buttonEl.style.paddingLeft = textNode.x() * scaleX + "px";
+      buttonEl.style.paddingBottom =
+        (inputBox.height() - textNode.y() - textNode.height()) * scaleY + "px";
+      // buttonEl.style.paddingRight =
+      //   (inputBox.width() - textNode.x() - textNode.width()) * scaleX + "px";
+      buttonEl.style.paddingRight = "unset";
+      buttonEl.style.width = inputBox.width() * scaleX + "px";
+      buttonEl.style.height = inputBox.height() * scaleY + "px";
+      buttonEl.style.backgroundColor = inputBox.fill();
+      buttonEl.innerText = attrs.text;
+      buttonEl.style.fontSize = attrs.fontSize;
+      buttonEl.style.border = "2px solid black";
+      buttonEl.style.display = "block";
+      buttonEl.style.textAlign = "left";
     });
     textNode.on("dblclick dbltap", () => {
       // hide text node and transformer:
@@ -1140,6 +1238,9 @@ con.addEventListener("drop", function (e) {
       }
     });
     // inputGroup.add(textNodeTr);
+    textNode.on("input", function () {
+      console.log("text change event");
+    });
     textNodeTr.on("transform", function () {
       // textNode.setAttrs({
       //   width: textNode.width() * textNode.scaleX(),
