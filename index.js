@@ -544,6 +544,9 @@ con.addEventListener("drop", function (e) {
         window.addEventListener("click", handleOutsideClick);
       });
     });
+    textNode.on("textChange", function () {
+      inputEl.placeholder = textNode.text();
+    });
 
     inputBox.on("click", function () {
       inputTr.nodes([inputBox]);
@@ -862,6 +865,9 @@ con.addEventListener("drop", function (e) {
       buttonEl.style.display = "block";
     });
 
+    textNode.on("textChange", function () {
+      buttonEl.innerText = textNode.text();
+    });
     stage.on("click", function (e) {
       if (e.target === stage) {
         inputTr.hide();
@@ -1174,6 +1180,7 @@ con.addEventListener("drop", function (e) {
           textNode.hide();
           textNodeTr.hide();
           border.hide();
+          buttonEl.style.display = "none";
           cssCodeEl.style.display = "none";
           cssCode = "";
           cssCodeEl.textContent = cssCode;
@@ -1197,7 +1204,7 @@ con.addEventListener("drop", function (e) {
     textNode.moveToTop();
     const { attrs } = textNode;
     console.log({ textNode, attrs });
-    const labelEl = document.createElement("p");
+    const labelEl = document.createElement("label");
     labelEl.innerText = textNode.text();
     labelEl.style.fontSize = attrs.fontSize + "px";
     labelEl.style.fontFamily = textNode.fontFamily();
@@ -1238,8 +1245,8 @@ con.addEventListener("drop", function (e) {
       }
     });
     // inputGroup.add(textNodeTr);
-    textNode.on("input", function () {
-      console.log("text change event");
+    textNode.on("textChange", function () {
+      labelEl.innerText = textNode.text();
     });
     textNodeTr.on("transform", function () {
       // textNode.setAttrs({
@@ -1691,6 +1698,23 @@ con.addEventListener("drop", function (e) {
       setTimeout(() => {
         window.addEventListener("click", handleOutsideClick);
       });
+    });
+    document.addEventListener("keydown", function (event) {
+      if (
+        event.keyCode === 46 ||
+        event.key === "Delete" ||
+        event.key === "Backspace"
+      ) {
+        var selectedNode = textNodeTr.nodes()[0];
+        if (selectedNode) {
+          textNode.hide();
+          textNodeTr.hide();
+          labelEl.style.display = "none";
+          cssCodeEl.style.display = "none";
+          cssCode = "";
+          cssCodeEl.textContent = cssCode;
+        }
+      }
     });
   }
   layer.draw();
