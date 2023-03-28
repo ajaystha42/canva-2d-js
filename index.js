@@ -1,5 +1,5 @@
 var width = window.innerWidth;
-var height = 400;
+var height = 222;
 var input = document.getElementById("myInput");
 var button = document.getElementById("myButton");
 var text = document.getElementById("myText");
@@ -27,35 +27,35 @@ var stage = new Konva.Stage({
 });
 var layer = new Konva.Layer();
 
-var complexText = new Konva.Text({
-  x: 20,
-  y: 60,
-  text: "Konvajs Demo\n\nDynamic Render",
-  fontSize: 18,
-  fontFamily: "Calibri",
-  fill: "#555",
-  width: 300,
-  padding: 20,
-  align: "center",
-});
+// var complexText = new Konva.Text({
+//   x: 20,
+//   y: 60,
+//   text: "Konvajs Demo\n\nDynamic Render",
+//   fontSize: 18,
+//   fontFamily: "Calibri",
+//   fill: "#555",
+//   width: 300,
+//   padding: 20,
+//   align: "center",
+// });
 
-var rect1 = new Konva.Rect({
-  x: 20,
-  y: 60,
-  stroke: "#555",
-  strokeWidth: 5,
-  fill: "#ddd",
-  width: 300,
-  height: complexText.height(),
-  shadowColor: "black",
-  shadowBlur: 10,
-  shadowOffsetX: 10,
-  shadowOffsetY: 10,
-  shadowOpacity: 0.2,
-  cornerRadius: 10,
-});
-layer.add(rect1);
-layer.add(complexText);
+// var rect1 = new Konva.Rect({
+//   x: 20,
+//   y: 60,
+//   stroke: "#555",
+//   strokeWidth: 5,
+//   fill: "#ddd",
+//   width: 300,
+//   height: complexText.height(),
+//   shadowColor: "black",
+//   shadowBlur: 10,
+//   shadowOffsetX: 10,
+//   shadowOffsetY: 10,
+//   shadowOpacity: 0.2,
+//   cornerRadius: 10,
+// });
+// layer.add(rect1);
+// layer.add(complexText);
 stage.add(layer);
 
 var con = document.getElementById("container");
@@ -80,8 +80,8 @@ con.addEventListener("drop", function (e) {
     });
 
     var inputBox = new Konva.Rect({
-      width: 200,
-      height: 50,
+      width: 150,
+      height: 20,
       fill: "#fff",
     });
 
@@ -119,10 +119,10 @@ con.addEventListener("drop", function (e) {
     layer.add(inputGroup);
 
     var textNode = new Konva.Text({
-      x: 60,
-      y: 17,
+      x: 40,
+      y: 5,
       text: "Placeholder",
-      fontSize: 18,
+      fontSize: 14,
       fill: "grey",
       draggable: true,
     });
@@ -146,6 +146,7 @@ con.addEventListener("drop", function (e) {
     inputEl.style.width = "200px";
     inputEl.style.height = "50px";
     inputEl.style.left = attrs.x + "px";
+    inputEl.style.position = "relative";
     inputEl.style.top = attrs.y + "px";
     // inputEl.style.color =
     inputEl.style.marginTop = inputGroup.y() + "px";
@@ -904,6 +905,8 @@ con.addEventListener("drop", function (e) {
     const buttonEl = document.createElement("button");
     buttonEl.placeholder = attrs.text;
     buttonEl.style.fontSize = attrs.fontSize;
+    buttonEl.style.position = "relative";
+
     // buttonEl.style.width = "200px";
     // buttonEl.style.height = "50px";
     buttonEl.style.left = attrs.x + "px";
@@ -934,7 +937,7 @@ con.addEventListener("drop", function (e) {
       x: stage.getPointerPosition().x,
       y: stage.getPointerPosition().y,
       text: "Type Here...",
-      fontSize: 18,
+      fontSize: 14,
       fill: "black",
       draggable: true,
     });
