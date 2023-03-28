@@ -81,7 +81,7 @@ con.addEventListener("drop", function (e) {
 
     var inputBox = new Konva.Rect({
       width: 150,
-      height: 20,
+      height: 30,
       fill: "#fff",
     });
 
@@ -689,8 +689,8 @@ con.addEventListener("drop", function (e) {
       inputBox.height() - textNode.y() - textNode.height() + "px";
     buttonEl.style.paddingRight =
       inputBox.width() - textNode.x() - textNode.width() + "px";
-    buttonEl.style.width = inputBox.width() * scaleX + "px";
-    buttonEl.style.height = inputBox.height() * scaleY + "px";
+    buttonEl.style.width = inputBox.width() + "px";
+    buttonEl.style.height = inputBox.height() + "px";
     buttonEl.style.backgroundColor = inputBox.fill();
     buttonEl.textContent = attrs.text;
     buttonEl.style.fontSize = attrs.fontSize;
