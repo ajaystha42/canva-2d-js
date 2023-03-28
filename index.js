@@ -146,13 +146,15 @@ con.addEventListener("drop", function (e) {
     inputEl.style.width = "200px";
     inputEl.style.height = "50px";
     inputEl.style.left = attrs.x + "px";
-    inputEl.style.position = "relative";
+    inputEl.style.position = "absolute";
     inputEl.style.top = attrs.y + "px";
+    inputEl.style.display = "block";
+    // inputEl.style.marginBottom = "10px"
     // inputEl.style.color =
     inputEl.style.marginTop = inputGroup.y() + "px";
     inputEl.style.marginLeft = inputGroup.x() + "px";
-    inputEl.style.marginBottom =
-      stage.height() - inputGroup.y() - inputBox.height() + "px";
+    // inputEl.style.marginBottom =
+    //   stage.height() - inputGroup.y() - inputBox.height() + "px";
     inputEl.style.marginRight =
       stage.width() - inputGroup.x() - inputBox.width() + "px";
     inputEl.style.paddingTop = textNode.y() + "px";
@@ -167,6 +169,7 @@ con.addEventListener("drop", function (e) {
     inputEl.placeholder = attrs.text;
     inputEl.style.fontSize = attrs.fontSize;
     inputEl.style.border = "2px solid black";
+    inputEl.style.display = "block";
     dynamicContainer.appendChild(inputEl);
 
     inputBox.on("click", function () {
@@ -191,8 +194,9 @@ con.addEventListener("drop", function (e) {
         background-color: ${inputBox.fill()};
       }
       `;
+      // inputEl.style = cssCode
       cssCodeEl.style.display = "block";
-
+      // inputEl.style.display = "block";
       cssCodeEl.textContent = cssCode;
       cssCodeEl.style.whiteSpace = "pre-line";
       // for dynamic html render
@@ -223,6 +227,8 @@ con.addEventListener("drop", function (e) {
       cssCodeEl.style.display = "block";
 
       cssCodeEl.textContent = cssCode;
+      // inputEl.style = cssCode
+      // inputEl.style.display = "block";
       cssCodeEl.style.whiteSpace = "pre-line";
       // for dynamic html render
     });
@@ -250,7 +256,8 @@ con.addEventListener("drop", function (e) {
       }
       `;
       cssCodeEl.style.display = "block";
-
+      // inputEl.style = cssCoded
+      // inputEl.style.display = "block";
       cssCodeEl.textContent = cssCode;
       cssCodeEl.style.whiteSpace = "pre-line";
       // for dynamic html render
@@ -905,17 +912,20 @@ con.addEventListener("drop", function (e) {
     const buttonEl = document.createElement("button");
     buttonEl.placeholder = attrs.text;
     buttonEl.style.fontSize = attrs.fontSize;
-    buttonEl.style.position = "relative";
+    buttonEl.style.position = "absolute";
 
     // buttonEl.style.width = "200px";
     // buttonEl.style.height = "50px";
     buttonEl.style.left = attrs.x + "px";
     buttonEl.style.top = attrs.y + "px";
+    buttonEl.style.display = "block";
+    buttonEl.style.marginBottom = "10px";
+
     // buttonEl.style.color =
     buttonEl.style.marginTop = inputGroup.y() + "px";
     buttonEl.style.marginLeft = inputGroup.x() + "px";
-    buttonEl.style.marginBottom =
-      stage.height() - inputGroup.y() - inputBox.height() + "px";
+    // buttonEl.style.marginBottom =
+    //   stage.height() - inputGroup.y() - inputBox.height() + "px";
     buttonEl.style.marginRight =
       stage.width() - inputGroup.x() - inputBox.width() + "px";
     buttonEl.style.paddingTop = textNode.y() + "px";
@@ -952,15 +962,16 @@ con.addEventListener("drop", function (e) {
     labelEl.style.fontStyle = textNode.fontStyle();
     // labelEl.style.fontWeight = textNode.fontWeight();
     labelEl.style.color = textNode.fill();
-    labelEl.style.position = "relative";
+    labelEl.style.position = "absolute";
     labelEl.style.left = textNode.x() + "px";
     labelEl.style.top = textNode.y() + "px";
+    labelEl.style.display = "block";
     labelEl.style.marginTop = textNode.y() + "px";
     labelEl.style.marginLeft = textNode.x() + "px";
     // labelEl.style.marginBottom =
     //   stage.height() - textNode.y() - inputBox.height() + "px";
-    // labelEl.style.marginRight =
-    //   stage.width() - textNode.x() - inputBox.width() + "px";
+    labelEl.style.marginRight =
+      stage.width() - textNode.x() - textNode.width() + "px";
     // labelEl.style.paddingTop = textNode.y() + "px";
     // labelEl.style.paddingLeft = textNode.x() + "px";
     // labelEl.style.paddingBottom =
